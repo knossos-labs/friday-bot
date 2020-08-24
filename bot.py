@@ -18,7 +18,10 @@ target_channel_id = 740673234843730712
 async def called_once_a_week():
     message_channel = bot.get_channel(target_channel_id)
     print(f"Got channel {message_channel}")
-    await message_channel.send("dingle")
+    video_fp = open("resources/friday-vid.mp4", "rb")
+    discord_file = discord.File(fp=video_fp)
+    #print(discord_file)
+    await message_channel.send("dingle", file=discord_file)
 
 @called_once_a_week.before_loop
 async def before():
