@@ -1,9 +1,8 @@
-import argparse
 import discord
 import json
-import logging
-import random
 from discord.ext import commands, tasks
+import schedule
+import time
 
 config_file="config.json"
 with open(config_file) as json_data:
@@ -13,20 +12,34 @@ token = config['token']
 bot = commands.Bot("!")
 
 target_channel_id = 740673234843730712
+message_channel = None
 
-@tasks.loop(hours=168)
-async def called_once_a_week():
+async def called_every_friday():
     message_channel = bot.get_channel(target_channel_id)
     print(f"Got channel {message_channel}")
-    video_fp = open("resources/friday-vid.mp4", "rb")
+    video_fp = open("resources/friday-vid-1.mp4", "rb")
     discord_file = discord.File(fp=video_fp)
-    #print(discord_file)
     await message_channel.send("dingle", file=discord_file)
 
-@called_once_a_week.before_loop
-async def before():
-    await bot.wait_until_ready()
-    print("Finished waiting")
+async def task():
+    await called_every_friday()
 
-called_once_a_week.start()
+#schedule.every(1).seconds.do(task)
+@bot.event
+async def on_ready():
+    message_channel = bot.get_channel(target_channel_id)
+    slow_count.start()
+
+@tasks.loop(seconds=1)
+async def slow_count():
+    await message_channel.send("hello there")
+
+@slow_count.after_loop
+async def after_slow_count():
+    print('done!')
+    
+#while True:
+#    schedule.run_pending()
+#    time.sleep(1)
+
 bot.run(token)
