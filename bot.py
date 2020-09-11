@@ -3,6 +3,7 @@ import discord
 import json
 import logging
 import random
+import asyncio
 from discord.ext import commands, tasks
 from datetime import datetime
 
@@ -22,19 +23,18 @@ print(rightnow.minute)
 print(rightnow.second)
 shouldrun = False
 
-@tasks.loop(seconds=1)
+@tasks.loop(hours=1)
 async def called_every_friday():
     rightnow = datetime.now()
     print("entering hyperloop")
-    shouldrun = rightnow.weekday() == 4 and rightnow.hour == 17 and rightnow.minute == 30 and rightnow.second == 0
+    shouldrun = rightnow.weekday() == 3 and rightnow.hour == 17
     print(shouldrun)
     if shouldrun:
         message_channel = bot.get_channel(target_channel_id)
         print(f"Got channel {message_channel}")
         video_fp = open("resources/friday-vid-1.mp4", "rb")
         discord_file = discord.File(fp=video_fp)
-        #print(discord_file)
-        await message_channel.send("You made it!", file=discord_file)
+        await message_channel.send("You made it!", file=discord_file) and await asyncio.sleep(600000)
 
 @called_every_friday.before_loop
 async def before():
